@@ -5,6 +5,7 @@ using System.IO.Pipelines;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Log.It;
 
 namespace Kafka.Protocol.Records
 {
@@ -30,6 +31,9 @@ namespace Kafka.Protocol.Records
     
     public abstract class RecordBatchSetBase: ISerialize
     {
+        private static readonly ILogger _logger =
+            LogFactory.Create<RecordBatchSetBase>();
+        
         public int Size { get; private set; }
 
         protected RecordBatchSetBase()
@@ -85,16 +89,21 @@ namespace Kafka.Protocol.Records
                     .ConfigureAwait(false)).Value - 1
                 : (int)await Int32.FromReaderAsync(reader, false, cancellationToken)
                     .ConfigureAwait(false);
+            _logger.Debug("Batch set size: {@size}", batchArray.Size);
             for (int remainder; (remainder = batchArray.Size - batchArray.GetSize(asCompact)) > 0;)
             {
+                _logger.Debug("Batch set remainder: {@remainder}", remainder);
                 var batch = await RecordBatch.FromReaderAsync(reader, asCompact, remainder, cancellationToken).ConfigureAwait(false);
                 if (batch == null)
                 {
+                    _logger.Debug("Incomplete batch, ignored.");
                     break;
                 }
                 
                 batchArray.Batches.Add(batch);
             }
+
+            _logger.Debug("Batch set actual size: {@size}", batchArray.GetSize(asCompact));
 
             return batchArray;
         }

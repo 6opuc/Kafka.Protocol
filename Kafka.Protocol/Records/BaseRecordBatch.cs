@@ -86,6 +86,12 @@ namespace Kafka.Protocol.Records
             CancellationToken cancellationToken = default)
             where T : BaseRecordBatch
         {
+            if (maxSize < 4 + 8)
+            {
+                await reader.ReadAsync(maxSize, cancellationToken);
+                return null;
+            }
+            
             recordBatch.BaseOffset = await Int64.FromReaderAsync(reader, false,
                     cancellationToken)
                 .ConfigureAwait(false);
