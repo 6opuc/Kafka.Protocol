@@ -14,12 +14,13 @@ namespace Kafka.Protocol.Records
         {
         }
 
-        internal static ValueTask<NullableRecordBatch> FromReaderAsync(
+        internal static ValueTask<NullableRecordBatch?> FromReaderAsync(
             PipeReader reader,
             bool asCompact,
+            int maxSize,
             CancellationToken cancellationToken = default) =>
             FromReaderAsync(new NullableRecordBatch(), reader,
-                asCompact, cancellationToken);
+                asCompact, maxSize, cancellationToken);
 
         public new NullableArray<Record> Records
         {

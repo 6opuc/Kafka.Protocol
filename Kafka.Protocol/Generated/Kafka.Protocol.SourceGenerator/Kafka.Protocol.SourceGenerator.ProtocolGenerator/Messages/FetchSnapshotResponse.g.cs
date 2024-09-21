@@ -321,7 +321,7 @@ namespace Kafka.Protocol
                     instance.SnapshotId_ = await SnapshotId.FromReaderAsync(instance.Version, reader, cancellationToken).ConfigureAwait(false);
                     instance.Size = await Int64.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
                     instance.Position = await Int64.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
-                    instance.UnalignedRecords = await RecordBatch.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
+                    instance.UnalignedRecords = await RecordBatchSet.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
                     if (instance.IsFlexibleVersion)
                     {
                         var tagSection = await Tags.TagSection.FromReaderAsync(reader, cancellationToken).ConfigureAwait(false);
@@ -700,12 +700,12 @@ namespace Kafka.Protocol
                     return this;
                 }
 
-                private RecordBatch _unalignedRecords = RecordBatch.Default;
+                private RecordBatchSet _unalignedRecords = RecordBatchSet.Default;
                 /// <summary>
                 /// <para>Snapshot data in records format which may not be aligned on an offset boundary</para>
                 /// <para>Versions: 0+</para>
                 /// </summary>
-                public RecordBatch UnalignedRecords
+                public RecordBatchSet UnalignedRecords
                 {
                     get => _unalignedRecords;
                     private set
@@ -718,7 +718,7 @@ namespace Kafka.Protocol
                 /// <para>Snapshot data in records format which may not be aligned on an offset boundary</para>
                 /// <para>Versions: 0+</para>
                 /// </summary>
-                public PartitionSnapshot WithUnalignedRecords(RecordBatch unalignedRecords)
+                public PartitionSnapshot WithUnalignedRecords(RecordBatchSet unalignedRecords)
                 {
                     UnalignedRecords = unalignedRecords;
                     return this;

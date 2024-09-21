@@ -327,7 +327,7 @@ namespace Kafka.Protocol
                 {
                     var instance = new PartitionProduceData(version);
                     instance.Index = await Int32.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
-                    instance.Records = await NullableRecordBatch.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
+                    instance.Records = await NullableRecordBatchSet.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
                     if (instance.IsFlexibleVersion)
                     {
                         var tagSection = await Tags.TagSection.FromReaderAsync(reader, cancellationToken).ConfigureAwait(false);
@@ -379,12 +379,12 @@ namespace Kafka.Protocol
                     return this;
                 }
 
-                private NullableRecordBatch _records = NullableRecordBatch.Default;
+                private NullableRecordBatchSet _records = NullableRecordBatchSet.Default;
                 /// <summary>
                 /// <para>The record data to be produced.</para>
                 /// <para>Versions: 0+</para>
                 /// </summary>
-                public RecordBatch? Records
+                public RecordBatchSet? Records
                 {
                     get => _records;
                     private set
@@ -397,7 +397,7 @@ namespace Kafka.Protocol
                 /// <para>The record data to be produced.</para>
                 /// <para>Versions: 0+</para>
                 /// </summary>
-                public PartitionProduceData WithRecords(RecordBatch? records)
+                public PartitionProduceData WithRecords(RecordBatchSet? records)
                 {
                     Records = records;
                     return this;

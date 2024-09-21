@@ -403,7 +403,7 @@ namespace Kafka.Protocol
                         instance.AbortedTransactionsCollection = await NullableArray<AbortedTransaction>.FromReaderAsync(reader, instance.IsFlexibleVersion, () => AbortedTransaction.FromReaderAsync(instance.Version, reader, cancellationToken), cancellationToken).ConfigureAwait(false);
                     if (instance.Version >= 11)
                         instance.PreferredReadReplica = await Int32.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
-                    instance.Records = await NullableRecordBatch.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
+                    instance.Records = await NullableRecordBatchSet.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
                     if (instance.IsFlexibleVersion)
                     {
                         var tagSection = await Tags.TagSection.FromReaderAsync(reader, cancellationToken).ConfigureAwait(false);
@@ -1172,12 +1172,12 @@ namespace Kafka.Protocol
                     return this;
                 }
 
-                private NullableRecordBatch _records = NullableRecordBatch.Default;
+                private NullableRecordBatchSet _records = NullableRecordBatchSet.Default;
                 /// <summary>
                 /// <para>The record data.</para>
                 /// <para>Versions: 0+</para>
                 /// </summary>
-                public RecordBatch? Records
+                public RecordBatchSet? Records
                 {
                     get => _records;
                     private set
@@ -1190,7 +1190,7 @@ namespace Kafka.Protocol
                 /// <para>The record data.</para>
                 /// <para>Versions: 0+</para>
                 /// </summary>
-                public PartitionData WithRecords(RecordBatch? records)
+                public PartitionData WithRecords(RecordBatchSet? records)
                 {
                     Records = records;
                     return this;

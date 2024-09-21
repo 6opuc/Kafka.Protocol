@@ -21,6 +21,8 @@ internal static class FieldExtensions
         _primitiveTypeNames = typeNames
             .Append("RecordBatch")
             .Append("NullableRecordBatch")
+            .Append("RecordBatchSet")
+            .Append("NullableRecordBatchSet")
             .ToArray();
     }
 
@@ -96,7 +98,7 @@ internal static class FieldExtensions
                 typeName = "Boolean";
                 break;
             case "records":
-                typeName = "RecordBatch";
+                typeName = "RecordBatchSet";
                 break;
             case "uint16":
                 typeName = "UInt16";

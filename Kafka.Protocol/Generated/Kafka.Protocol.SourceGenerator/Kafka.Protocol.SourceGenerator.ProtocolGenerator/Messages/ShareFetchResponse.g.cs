@@ -328,7 +328,7 @@ namespace Kafka.Protocol
                     instance.AcknowledgeErrorCode = await Int16.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
                     instance.AcknowledgeErrorMessage = await NullableString.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
                     instance.CurrentLeader = await LeaderIdAndEpoch.FromReaderAsync(instance.Version, reader, cancellationToken).ConfigureAwait(false);
-                    instance.Records = await NullableRecordBatch.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
+                    instance.Records = await NullableRecordBatchSet.FromReaderAsync(reader, instance.IsFlexibleVersion, cancellationToken).ConfigureAwait(false);
                     instance.AcquiredRecordsCollection = await Array<AcquiredRecords>.FromReaderAsync(reader, instance.IsFlexibleVersion, () => AcquiredRecords.FromReaderAsync(instance.Version, reader, cancellationToken), cancellationToken).ConfigureAwait(false);
                     if (instance.IsFlexibleVersion)
                     {
@@ -608,12 +608,12 @@ namespace Kafka.Protocol
                     }
                 }
 
-                private NullableRecordBatch _records = NullableRecordBatch.Default;
+                private NullableRecordBatchSet _records = NullableRecordBatchSet.Default;
                 /// <summary>
                 /// <para>The record data.</para>
                 /// <para>Versions: 0+</para>
                 /// </summary>
-                public RecordBatch? Records
+                public RecordBatchSet? Records
                 {
                     get => _records;
                     private set
@@ -626,7 +626,7 @@ namespace Kafka.Protocol
                 /// <para>The record data.</para>
                 /// <para>Versions: 0+</para>
                 /// </summary>
-                public PartitionData WithRecords(RecordBatch? records)
+                public PartitionData WithRecords(RecordBatchSet? records)
                 {
                     Records = records;
                     return this;

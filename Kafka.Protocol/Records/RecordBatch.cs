@@ -22,12 +22,13 @@ namespace Kafka.Protocol.Records
             }
         }
 
-        internal static ValueTask<RecordBatch> FromReaderAsync(
+        internal static ValueTask<RecordBatch?> FromReaderAsync(
             PipeReader reader,
             bool asCompact,
+            int maxSize,
             CancellationToken cancellationToken = default) =>
             FromReaderAsync(new RecordBatch(), reader,
-                asCompact, cancellationToken);
+                asCompact, maxSize, cancellationToken);
 
         public new Array<Record> Records
         {

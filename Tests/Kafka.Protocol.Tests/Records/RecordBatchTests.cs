@@ -69,7 +69,7 @@ namespace Kafka.Protocol.Tests.Records
                 {
                     var reader = await _bytes.ToReaderAsync()
                         .ConfigureAwait(false);
-                    await RecordBatch.FromReaderAsync(reader, AsCompact, CancellationToken)
+                    await RecordBatch.FromReaderAsync(reader, AsCompact, System.Int32.MaxValue, CancellationToken)
                         .ConfigureAwait(false);
                     reader.TryRead(out _).Should().BeFalse();
                 }
@@ -78,7 +78,7 @@ namespace Kafka.Protocol.Tests.Records
             public class When_reading : UnitTestSpecificationAsync
             {
                 private const bool AsCompact = false;
-                private RecordBatch _recordBatch = null!;
+                private RecordBatch? _recordBatch = null!;
                 private PipeReader _reader = null!;
 
                 protected override async Task WhenAsync()
@@ -86,7 +86,7 @@ namespace Kafka.Protocol.Tests.Records
                     _reader = await SerializedRecordBatch.ToReaderAsync(CancellationToken)
                         .ConfigureAwait(false);
                     _recordBatch = await RecordBatch.FromReaderAsync(_reader,
-                            AsCompact, CancellationToken)
+                            AsCompact, System.Int32.MaxValue, CancellationToken)
                         .ConfigureAwait(false);
                 }
 
@@ -166,7 +166,7 @@ namespace Kafka.Protocol.Tests.Records
                 {
                     var reader = await _bytes.ToReaderAsync()
                         .ConfigureAwait(false);
-                    await RecordBatch.FromReaderAsync(reader, AsCompact, CancellationToken)
+                    await RecordBatch.FromReaderAsync(reader, AsCompact, System.Int32.MaxValue, CancellationToken)
                         .ConfigureAwait(false);
                     reader.TryRead(out _).Should().BeFalse();
                 }
@@ -225,7 +225,7 @@ namespace Kafka.Protocol.Tests.Records
                 {
                     var reader = await _bytes.ToReaderAsync()
                         .ConfigureAwait(false);
-                    await NullableRecordBatch.FromReaderAsync(reader, AsCompact, CancellationToken)
+                    await NullableRecordBatch.FromReaderAsync(reader, AsCompact, System.Int32.MaxValue, CancellationToken)
                         .ConfigureAwait(false);
                     reader.TryRead(out _).Should().BeFalse();
                 }
@@ -259,7 +259,7 @@ namespace Kafka.Protocol.Tests.Records
                 {
                     var reader = await _bytes.ToReaderAsync()
                         .ConfigureAwait(false);
-                    await NullableRecordBatch.FromReaderAsync(reader, AsCompact, CancellationToken)
+                    await NullableRecordBatch.FromReaderAsync(reader, AsCompact, System.Int32.MaxValue, CancellationToken)
                         .ConfigureAwait(false);
                     reader.TryRead(out _).Should().BeFalse();
                 }
@@ -293,7 +293,7 @@ namespace Kafka.Protocol.Tests.Records
                 {
                     var reader = await _bytes.ToReaderAsync()
                         .ConfigureAwait(false);
-                    await NullableRecordBatch.FromReaderAsync(reader, AsCompact, CancellationToken)
+                    await NullableRecordBatch.FromReaderAsync(reader, AsCompact, System.Int32.MaxValue, CancellationToken)
                         .ConfigureAwait(false);
                     reader.TryRead(out _).Should().BeFalse();
                 }
@@ -332,7 +332,7 @@ namespace Kafka.Protocol.Tests.Records
                 {
                     var reader = await _bytes.ToReaderAsync()
                         .ConfigureAwait(false);
-                    await NullableRecordBatch.FromReaderAsync(reader, AsCompact, CancellationToken)
+                    await NullableRecordBatch.FromReaderAsync(reader, AsCompact, System.Int32.MaxValue, CancellationToken)
                         .ConfigureAwait(false);
                     reader.TryRead(out _).Should().BeFalse();
                 }
@@ -367,7 +367,7 @@ namespace Kafka.Protocol.Tests.Records
                 {
                     var reader = await _bytes.ToReaderAsync()
                         .ConfigureAwait(false);
-                    await NullableRecordBatch.FromReaderAsync(reader, AsCompact, CancellationToken)
+                    await NullableRecordBatch.FromReaderAsync(reader, AsCompact, System.Int32.MaxValue, CancellationToken)
                         .ConfigureAwait(false);
                     reader.TryRead(out _).Should().BeFalse();
                 }

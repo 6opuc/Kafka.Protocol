@@ -20,8 +20,8 @@
     <Copyright>Copyright © 2019 Fredrik Arvidsson</Copyright>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <ApiCompatValidateAssemblies>true</ApiCompatValidateAssemblies>
-    <ApiCompatContractAssembly>LastMajorVersionBinary/lib/$(TargetFramework)/$(AssemblyName).dll</ApiCompatContractAssembly>
+    <!--<ApiCompatValidateAssemblies>true</ApiCompatValidateAssemblies>
+    <ApiCompatContractAssembly>LastMajorVersionBinary/lib/$(TargetFramework)/$(AssemblyName).dll</ApiCompatContractAssembly>-->
     <!--https://learn.microsoft.com/en-us/dotnet/fundamentals/apicompat/diagnostic-ids-->
     <ApiCompatGenerateSuppressionFile>false</ApiCompatGenerateSuppressionFile>
 

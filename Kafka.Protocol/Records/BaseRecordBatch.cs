@@ -78,30 +78,27 @@ namespace Kafka.Protocol.Records
             set => Attributes = Attributes.SetBit(5, value);
         }
 
-        protected internal static async ValueTask<T> FromReaderAsync<T>(
-            T recordBatch,
+        protected internal static async ValueTask<T?> FromReaderAsync<T>(
+            T? recordBatch,
             PipeReader reader,
             bool asCompact,
+            int maxSize,
             CancellationToken cancellationToken = default)
             where T : BaseRecordBatch
         {
-            var size = asCompact
-                ? (int)(await UVarInt
-                    .FromReaderAsync(reader, true, cancellationToken)
-                    .ConfigureAwait(false)).Value - 1
-                : (int)await Int32.FromReaderAsync(reader, false, cancellationToken)
-                    .ConfigureAwait(false);
-            if (size < 0)
-            {
-                return recordBatch;
-            }
-
             recordBatch.BaseOffset = await Int64.FromReaderAsync(reader, false,
                     cancellationToken)
                 .ConfigureAwait(false);
             recordBatch.BatchLength = await Int32.FromReaderAsync(reader, false,
                     cancellationToken)
                 .ConfigureAwait(false);
+
+            if (recordBatch.BatchLength > maxSize)
+            {
+                await reader.ReadAsync(maxSize - 4 - 8, cancellationToken);
+                return null;
+            }
+            
             recordBatch.PartitionLeaderEpoch = await Int32
                 .FromReaderAsync(reader, false, cancellationToken)
                 .ConfigureAwait(false);
@@ -151,12 +148,6 @@ namespace Kafka.Protocol.Records
             {
                 throw new CorruptMessageException(
                     $"Expected batch length of {recordBatch.BatchLength} but the actual length is {recordBatch}");
-            }
-
-            var actualSize = recordBatch.PayloadSize();
-            if (size != actualSize)
-            {
-                throw new CorruptMessageException($"Expected size {size} got {actualSize}");
             }
 
             return recordBatch;
@@ -214,13 +205,10 @@ namespace Kafka.Protocol.Records
         internal int GetSize(bool asCompact)
         {
             var size = PayloadSize();
-            return (asCompact
-                       ? UVarInt.From(Records.Value == null ? 0 : (uint)size + 1).GetSize(true)
-                       : Int32.From(Records.Value == null ? -1 : size).GetSize(false)) +
-                   size;
+            return size;
         }
 
-        private int PayloadSize() =>
+        public int PayloadSize() =>
             Records.Value == null
                 ? 0
                 : BaseOffset.GetSize(false) +
