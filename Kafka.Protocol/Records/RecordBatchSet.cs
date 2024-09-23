@@ -90,7 +90,8 @@ namespace Kafka.Protocol.Records
                 : (int)await Int32.FromReaderAsync(reader, false, cancellationToken)
                     .ConfigureAwait(false);
             _logger.Debug("Batch set size: {@size}", batchArray.Size);
-            for (int remainder; (remainder = batchArray.Size - batchArray.GetSize(asCompact)) > 0;)
+            var batchArraySize = 0;
+            for (int remainder; (remainder = batchArray.Size - batchArraySize) > 0;)
             {
                 _logger.Debug("Batch set remainder: {@remainder}", remainder);
                 var batch = await RecordBatch.FromReaderAsync(reader, asCompact, remainder, cancellationToken).ConfigureAwait(false);
@@ -101,6 +102,7 @@ namespace Kafka.Protocol.Records
                 }
                 
                 batchArray.Batches.Add(batch);
+                batchArraySize += batch.GetSize(asCompact);
             }
 
             _logger.Debug("Batch set actual size: {@size}", batchArray.GetSize(asCompact));
