@@ -148,13 +148,13 @@ namespace Kafka.Protocol.Records
                 throw new CorruptMessageException(
                     $"Record batch is corrupt. The read data has crc {checksumReader.Checksum} but the record batch states that crc should be {recordBatch.Crc}");
             }
-
+/*
             var batchLength = recordBatch.GetBatchLength();
             if (batchLength != recordBatch.BatchLength)
             {
                 throw new CorruptMessageException(
                     $"Expected batch length of {recordBatch.BatchLength} but the actual length is {recordBatch}");
-            }
+            }*/
 
             return recordBatch;
         }

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Kafka.Protocol
 {
-    internal static class PipeReaderExtensions
+    public static class PipeReaderExtensions
     {
-        internal static async ValueTask<byte[]> ReadAsLittleEndianAsync(
+        public static async ValueTask<byte[]> ReadAsLittleEndianAsync(
             this PipeReader reader,
             int length,
             CancellationToken cancellationToken = default)
@@ -23,7 +23,7 @@ namespace Kafka.Protocol
             return bytes;
         }
 
-        internal static async ValueTask<byte[]> ReadAsBigEndianAsync(
+        public static async ValueTask<byte[]> ReadAsBigEndianAsync(
             this PipeReader reader,
             int length,
             CancellationToken cancellationToken = default)
@@ -38,7 +38,7 @@ namespace Kafka.Protocol
             return bytes;
         }
 
-        internal static async ValueTask<byte[]> ReadAsync(
+        public static async ValueTask<byte[]> ReadAsync(
             this PipeReader reader,
             int length,
             CancellationToken cancellationToken = default)

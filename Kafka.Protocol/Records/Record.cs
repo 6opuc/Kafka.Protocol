@@ -17,6 +17,8 @@ namespace Kafka.Protocol.Records
         public byte[]? Value { get; set; }
         public Header[] Headers { get; set; } = Array.Empty<Header>();
 
+        private int _size = 0;
+
         internal static async ValueTask<Record> FromReaderAsync(
             PipeReader reader,
             bool asCompact,
@@ -33,6 +35,7 @@ namespace Kafka.Protocol.Records
                     .ConfigureAwait(false),
                 OffsetDelta = await VarInt.FromReaderAsync(reader, asCompact, cancellationToken)
                     .ConfigureAwait(false),
+                _size = size,
             };
 
             var keyLength = await VarInt.FromReaderAsync(reader, asCompact, cancellationToken)
@@ -111,8 +114,8 @@ namespace Kafka.Protocol.Records
         int ISerialize.GetSize(bool asCompact) => GetSize(asCompact);
         internal int GetSize(bool asCompact)
         {
-            var size = PayloadSize(asCompact);
-            return VarInt.From(size).GetSize(asCompact) + size;
+            //var size = PayloadSize(asCompact);
+            return VarInt.From(_size).GetSize(asCompact) + _size;
         }
 
         private int PayloadSize(bool asCompact) =>
