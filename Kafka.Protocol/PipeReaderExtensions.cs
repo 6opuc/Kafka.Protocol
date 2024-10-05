@@ -70,7 +70,8 @@ namespace Kafka.Protocol
                 return Array.Empty<byte>();
             }
 
-            var bufferWriter = new ArrayBufferWriter<byte>(length);
+            var bytes = new byte[length];
+            var writtenCount = 0;
 
             ReadResult result;
             do
@@ -78,25 +79,25 @@ namespace Kafka.Protocol
                 result = await reader.ReadAsync(cancellationToken)
                     .ConfigureAwait(false);
                 var buffer = result.Buffer.Slice(
-                    0, Math.Min(bufferWriter.FreeCapacity, result.Buffer.Length));
-                buffer.CopyTo(bufferWriter.GetSpan());
-                bufferWriter.Advance((int)buffer.Length);
+                    0, Math.Min(length, result.Buffer.Length));
+                buffer.CopyTo(bytes.AsSpan()[writtenCount..]);
+                writtenCount += (int)buffer.Length;
                 reader.AdvanceTo(buffer.End);
 
-                if (bufferWriter.WrittenCount == length)
+                if (writtenCount == length)
                 {
-                    return bufferWriter.WrittenMemory.ToArray();
+                    return bytes;
                 }
             } while (result.HasMoreData());
 
-            if (bufferWriter.WrittenCount == 0)
+            if (writtenCount == 0)
             {
                 reader.Complete();
                 throw new OperationCanceledException(cancellationToken);
             }
 
             var exception = new OperationCanceledException(
-                    $"Expected {length} bytes, got {bufferWriter.WrittenCount}",
+                    $"Expected {length} bytes, got {writtenCount}",
                     cancellationToken);
             reader.Complete(exception);
             throw exception;
