@@ -14,7 +14,7 @@ namespace Kafka.Protocol
 
         internal ValueTask WriteToAsync(Stream writer, bool asCompact, CancellationToken cancellationToken = default) =>
             writer.WriteAsLittleEndianAsync(new[] { (byte)Value }, cancellationToken);
-
+/*
         internal static async ValueTask<Int8> FromReaderAsync(
             PipeReader reader,
             bool asCompact,
@@ -23,5 +23,14 @@ namespace Kafka.Protocol
                 (await reader.ReadAsLittleEndianAsync(1, cancellationToken)
                     .ConfigureAwait(false))
                 .First());
+     */   
+        
+        internal static async ValueTask<Int8> FromReaderAsync(
+            PipeReader reader,
+            bool asCompact,
+            CancellationToken cancellationToken = default) =>
+            Convert.ToSByte(
+                await reader.ReadByteAsync(cancellationToken)
+                    .ConfigureAwait(false));
     }
 }

@@ -89,6 +89,10 @@ namespace Kafka.Protocol.Records
             if (maxSize < 4 + 8)
             {
                 await reader.ReadAsync(maxSize, cancellationToken);
+                /*var result = await reader.ReadAsync(cancellationToken)
+                    .ConfigureAwait(false);
+                reader.AdvanceTo(result.Buffer.GetPosition(maxSize));
+                */
                 return null;
             }
             
