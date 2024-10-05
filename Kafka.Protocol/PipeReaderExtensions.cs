@@ -38,6 +38,28 @@ namespace Kafka.Protocol
             return bytes;
         }
 
+        public static async ValueTask<byte> ReadByteAsync(
+            this PipeReader reader,
+            CancellationToken cancellationToken = default)
+        {
+            var readResult = await reader.ReadAsync(cancellationToken)
+                .ConfigureAwait(false);
+            var result = readResult.Buffer.FirstSpan[0];
+            reader.AdvanceTo(readResult.Buffer.GetPosition(1));
+            return result;
+        }
+
+        public static async ValueTask<int> ReadIntAsync(
+            this PipeReader reader,
+            CancellationToken cancellationToken = default)
+        {
+            var a = await reader.ReadByteAsync(cancellationToken);
+            var b = await reader.ReadByteAsync(cancellationToken);
+            var c = await reader.ReadByteAsync(cancellationToken);
+            var d = await reader.ReadByteAsync(cancellationToken);
+            return a << 3*8 | b << 2*8 | c << 8 | d;
+        }
+
         public static async ValueTask<byte[]> ReadAsync(
             this PipeReader reader,
             int length,

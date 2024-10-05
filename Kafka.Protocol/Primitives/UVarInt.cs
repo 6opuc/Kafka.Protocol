@@ -39,9 +39,9 @@ namespace Kafka.Protocol
             var shift = 0;
             while (more)
             {
-                var lowerBits = (await reader
-                    .ReadAsLittleEndianAsync(1, cancellationToken)
-                    .ConfigureAwait(false)).First();
+                var lowerBits = await reader
+                    .ReadByteAsync(cancellationToken)
+                    .ConfigureAwait(false);
 
                 more = (lowerBits & 128) != 0;
                 value |= (uint)((lowerBits & 0x7f) << shift);
