@@ -1,4 +1,6 @@
-﻿namespace Kafka.Protocol.Cryptography
+﻿using System;
+
+namespace Kafka.Protocol.Cryptography
 {
     internal static class Crc32C
     {
@@ -22,8 +24,8 @@
 
         internal static uint Compute(byte[] input)
             => Append(0, input);
-
-        internal static uint Append(uint crc, byte[] input)
+        
+        internal static uint Append(uint crc, ReadOnlySpan<byte> input)
         {
             var crcLocal = uint.MaxValue ^ crc;
 

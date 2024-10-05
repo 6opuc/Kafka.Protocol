@@ -29,8 +29,14 @@ namespace Kafka.Protocol.Cryptography
 
         public override void AdvanceTo(SequencePosition consumed)
         {
+            foreach (var memory in _result.Buffer.Slice(0, consumed))
+            {
+                Checksum = Crc32C.Append(Checksum, memory.Span);
+            }
+            /*
             var data = _result.Buffer.Slice(0, consumed);
             Checksum = Crc32C.Append(Checksum, data.ToArray());
+            */
             _reader.AdvanceTo(consumed);
         }
 
