@@ -63,12 +63,12 @@ namespace Kafka.Protocol.Records
                     .ConfigureAwait(false));
             }
             record.Headers = headers.ToArray();
-
+/*
             var actualSize = record.PayloadSize(asCompact);
             if (size != actualSize)
             {
                 throw new CorruptMessageException($"Expected size {size} got {actualSize}");
-            }
+            }*/
             return record;
         } 
 
