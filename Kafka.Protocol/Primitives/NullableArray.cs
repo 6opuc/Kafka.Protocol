@@ -75,6 +75,29 @@ namespace Kafka.Protocol
             return result;
         }
 
+        public static NullableArray<T> FromStream(
+            Stream stream,
+            bool asCompact,
+            Func<T> createItem)
+        {
+            var length = asCompact
+                ? stream.ReadAsVarInt32() - 1
+                : stream.ReadInt32();
+            
+            if (length == -1)
+            {
+                return default;
+            }
+
+            var result = new T[length];
+            for (var i = 0; i < length; i++)
+            {
+                result[i] = createItem();
+            }
+
+            return result;
+        }
+
         public IEnumerator<T> GetEnumerator() =>
             Value?.AsEnumerable()?.GetEnumerator() ??
             Enumerable.Empty<T>().GetEnumerator();

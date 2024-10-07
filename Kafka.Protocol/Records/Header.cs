@@ -36,6 +36,23 @@ namespace Kafka.Protocol.Records
                 Value = value
             };
         }
+        
+        public static Header FromStream(
+            Stream stream,
+            bool asCompact)
+        {
+            var keyLength = stream.ReadAsVarInt32();
+            var key = Encoding.UTF8.GetString(stream.ReadBytes(keyLength));
+            
+            var valueLength = stream.ReadAsVarInt32();
+            var value = stream.ReadBytes(valueLength);
+            
+            return new Header
+            {
+                Key = key,
+                Value = value
+            };
+        }
 
         ValueTask ISerialize.WriteToAsync(Stream writer, bool asCompact, CancellationToken cancellationToken = default) => WriteToAsync(writer, asCompact, cancellationToken);
         internal async ValueTask WriteToAsync(

@@ -70,7 +70,40 @@ namespace Kafka.Protocol.Records
                 throw new CorruptMessageException($"Expected size {size} got {actualSize}");
             }*/
             return record;
-        } 
+        }
+
+        public static Record FromStream(
+            Stream stream,
+            bool asCompact)
+        {
+            var size = stream.ReadAsVarInt32();
+            var record = new Record
+            {
+                Attributes = (sbyte)stream.ReadByte(),
+                TimestampDelta = stream.ReadAsVarInt64(),
+                OffsetDelta = stream.ReadAsVarInt32(),
+                _size = size,
+            };
+
+            var keyLength = stream.ReadAsVarInt32();
+            record.Key = keyLength == -1
+                ? null
+                : stream.ReadBytes(keyLength);
+            var valueLen = stream.ReadAsVarInt32();
+            record.Value = valueLen == -1
+                ? null
+                : stream.ReadBytes(valueLen);
+
+            var headerCount = stream.ReadAsVarInt32();
+            var headers = new Header[headerCount];
+            for (var i = 0; i < headerCount; i++)
+            {
+                headers[i] = Header.FromStream(stream, asCompact);
+            }
+            record.Headers = headers;
+
+            return record;
+        }
 
         ValueTask ISerialize.WriteToAsync(Stream writer, bool asCompact, CancellationToken cancellationToken) => WriteToAsync(writer, asCompact, cancellationToken);
         internal async ValueTask WriteToAsync(

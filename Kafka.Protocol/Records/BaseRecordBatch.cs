@@ -109,43 +109,25 @@ namespace Kafka.Protocol.Records
                 return null;
             }
             
-            recordBatch.PartitionLeaderEpoch = await Int32
-                .FromReaderAsync(reader, false, cancellationToken)
-                .ConfigureAwait(false);
-            recordBatch.Magic = await Int8
-                .FromReaderAsync(reader, false, cancellationToken)
-                .ConfigureAwait(false);
-            recordBatch.Crc = await UInt32
-                .FromReaderAsync(reader, false, cancellationToken)
-                .ConfigureAwait(false);
+            var batchPayload = 
+                await reader.ReadAsync(recordBatch.BatchLength, cancellationToken);
 
-            var checksumReader = reader; //new ChecksumCalculatingPipeReader(reader);
-            recordBatch.Attributes = await Int16.FromReaderAsync(checksumReader, false,
-                    cancellationToken)
-                .ConfigureAwait(false);
-            recordBatch.LastOffsetDelta = await Int32
-                .FromReaderAsync(checksumReader, false, cancellationToken)
-                .ConfigureAwait(false);
-            recordBatch.FirstTimestamp = await Int64
-                .FromReaderAsync(checksumReader, false, cancellationToken)
-                .ConfigureAwait(false);
-            recordBatch.MaxTimestamp = await Int64
-                .FromReaderAsync(checksumReader, false, cancellationToken)
-                .ConfigureAwait(false);
-            recordBatch.ProducerId = await Int64.FromReaderAsync(checksumReader, false,
-                    cancellationToken)
-                .ConfigureAwait(false);
-            recordBatch.ProducerEpoch = await Int16
-                .FromReaderAsync(checksumReader, false, cancellationToken)
-                .ConfigureAwait(false);
-            recordBatch.BaseSequence = await Int32
-                .FromReaderAsync(checksumReader, false, cancellationToken)
-                .ConfigureAwait(false);
-            recordBatch.Records = await NullableArray<Record>.FromReaderAsync(
-                    checksumReader, false,
-                    () => Record.FromReaderAsync(checksumReader, false,
-                        cancellationToken), cancellationToken)
-                .ConfigureAwait(false);
+            using var batchStream = new MemoryStream(batchPayload);
+            recordBatch.PartitionLeaderEpoch = batchStream.ReadInt32();
+            recordBatch.Magic = (sbyte)batchStream.ReadByte();
+            recordBatch.Crc = (uint)batchStream.ReadInt32();
+            
+            //TODO: check crc from this position
+
+            recordBatch.Attributes = batchStream.ReadInt16();
+            recordBatch.LastOffsetDelta = batchStream.ReadInt32();
+            recordBatch.FirstTimestamp = batchStream.ReadInt64();
+            recordBatch.MaxTimestamp = batchStream.ReadInt64();
+            recordBatch.ProducerId = batchStream.ReadInt64();
+            recordBatch.ProducerEpoch = batchStream.ReadInt16();
+            recordBatch.BaseSequence = batchStream.ReadInt32();
+            recordBatch.Records = NullableArray<Record>.FromStream(batchStream,
+                asCompact, () => Record.FromStream(batchStream, asCompact));
 
             /*if (checksumReader.Checksum != recordBatch.Crc)
             {

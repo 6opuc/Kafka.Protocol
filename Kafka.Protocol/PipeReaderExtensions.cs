@@ -85,10 +85,10 @@ namespace Kafka.Protocol
                 result = await reader.ReadAsync(cancellationToken)
                     .ConfigureAwait(false);
                 var buffer = result.Buffer.Slice(
-                    0, Math.Min(length, result.Buffer.Length));
+                    0, Math.Min(length - writtenCount, result.Buffer.Length));
                 buffer.CopyTo(bytes.AsSpan()[writtenCount..]);
                 writtenCount += (int)buffer.Length;
-                reader.AdvanceTo(buffer.End);
+                reader.AdvanceTo(buffer.GetPosition(buffer.Length));
 
                 if (writtenCount == length)
                 {
