@@ -119,7 +119,7 @@ namespace Kafka.Protocol.Records
                 .FromReaderAsync(reader, false, cancellationToken)
                 .ConfigureAwait(false);
 
-            var checksumReader = new ChecksumCalculatingPipeReader(reader);
+            var checksumReader = reader; //new ChecksumCalculatingPipeReader(reader);
             recordBatch.Attributes = await Int16.FromReaderAsync(checksumReader, false,
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -147,11 +147,11 @@ namespace Kafka.Protocol.Records
                         cancellationToken), cancellationToken)
                 .ConfigureAwait(false);
 
-            if (checksumReader.Checksum != recordBatch.Crc)
+            /*if (checksumReader.Checksum != recordBatch.Crc)
             {
                 throw new CorruptMessageException(
                     $"Record batch is corrupt. The read data has crc {checksumReader.Checksum} but the record batch states that crc should be {recordBatch.Crc}");
-            }
+            }*/
 /*
             var batchLength = recordBatch.GetBatchLength();
             if (batchLength != recordBatch.BatchLength)

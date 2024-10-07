@@ -53,11 +53,17 @@ namespace Kafka.Protocol
             this PipeReader reader,
             CancellationToken cancellationToken = default)
         {
+            /*
             var a = await reader.ReadByteAsync(cancellationToken);
             var b = await reader.ReadByteAsync(cancellationToken);
             var c = await reader.ReadByteAsync(cancellationToken);
             var d = await reader.ReadByteAsync(cancellationToken);
             return a << 3*8 | b << 2*8 | c << 8 | d;
+            */
+            
+            return BitConverter.ToInt32(
+                await reader.ReadAsBigEndianAsync(4, cancellationToken));
+                
         }
 
         public static async ValueTask<byte[]> ReadAsync(
